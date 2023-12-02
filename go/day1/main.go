@@ -7,58 +7,38 @@ import (
     "os"
     "regexp"
     "strconv"
-    "sort"
-    // "strings"
+    "strings"
+    "time"
 )
 
-var intToWord = map[int]string{
-    0: "zero",
-    1: "one",
-    2: "two",
-    3: "three",
-    4: "four",
-    5: "five",
-    6: "six",
-    7: "seven",
-    8: "eight",
-    9: "nine",
-}
-
 func findFirstAndLastNumber(s string) int {
-    // sort map by key
-    keys := make([]int, 0, len(intToWord))
-    for k := range intToWord {
-        keys = append(keys, k)
+    var loopUpTable = map[string]string {
+        "one": "one1e",
+        "two": "two2o",
+        "three": "three3e",
+        "four": "four4r",
+        "five": "five5e",
+        "six": "six6x",
+        "seven": "seven7n",
+        "eight": "eight8t",
+        "nine": "nine9e",
     }
-    sort.Ints(keys)
-    // replace words with numbers
-    for _, k := range keys {
-        s = regexp.MustCompile(intToWord[k]).ReplaceAllString(s, strconv.Itoa(k))
-    }
-    re := regexp.MustCompile("[0-9]")
-    arr := re.FindAllString(s, -1)
-    if len(arr) == 0 {
-        return 0
-    }
-    if len(arr) == 1 {
-        number, err := strconv.ParseInt(arr[0], 10, 32)
-        if err != nil {
-            log.Fatal(err)
+    for key, value := range loopUpTable {
+        if strings.Contains(s, key) {
+            s = strings.Replace(s, key, value, -1)
         }
-        return int(number)
     }
-    first := arr[0]
-    last := arr[len(arr)-1]
-    concat := first + last
-    number, err := strconv.ParseInt(concat, 10, 32)
-    if err != nil {
-        log.Fatal(err)
-    }
-    return int(number)
+    number := findFirstAndLastDigit(s)
+
+    return number
+
 }
 
 func findFirstAndLastDigit(s string) int {
-    re := regexp.MustCompile("[0-9]")
+    if len(s) == 0 {
+        return 0
+    }
+    re := regexp.MustCompile("[1-9]")
     arr := re.FindAllString(s, -1)
     first := arr[0]
     last := arr[len(arr)-1]
@@ -71,18 +51,24 @@ func findFirstAndLastDigit(s string) int {
 }
 
 func part1(data []string) int {
+    start := time.Now()
     value := 0
     for _, line := range data {
         value += findFirstAndLastDigit(line)
     }
+    elapsed := time.Since(start)
+    fmt.Println("Part 1 took: ", elapsed)
     return value
 }   
 
 func part2(data []string) int {
+    start := time.Now()
     value := 0
     for _, line := range data {
         value += findFirstAndLastNumber(line)
     }
+    elapsed := time.Since(start)
+    fmt.Println("Part 2 took: ", elapsed)
     return value
 }
 
